@@ -1,91 +1,81 @@
-import './App.css'
-import { useForm } from 'react-hook-form'
-import useZohoWidget from '../src/hooks/useZohoWidget'
+import { Box } from '@mui/material';
+import { useEffect, useState } from 'react';
+import ZohoAlert from './components/ZohoAlert.js';
+import ZohoForm from './components/ZohoForm.js';
+import ZohoSkeleton from './components/ZohoSkeleton.js';
+import useZohoWidget from './hooks/useZohoWidget.js';
 
 function App() {
-  const data = useZohoWidget();
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const {
+    isLoadingSkeleton,
+    isLoading,
+    setIsLoading,
+    zbooksRecordId,
+    createBooksContactPerson,
+    alertData,
+    setAlertData
+  } = useZohoWidget();
+  const [
+    formData,
+    setFormData
+  ] = useState(null);
 
-  //searchzbookscontacts
+  // console.log({ zbooksRecordId })
+  // console.log({ isLoading })
+  // console.log({ zcrmRecordId })
+  // console.log({ formData })
 
-  console.log(data)
-
-  function formFirstRow() {
-    return (
-      <div className="form-row">
-        <div className="form-column">
-          <div className="form-group">
-            <label>Nombres:</label>
-            <input type="text" {...register('firstName', { required: true })} />
-          </div>
-        </div>
-        <div className="form-column">
-          <div className="form-group">
-            <label>Apellidos:</label>
-            <input type="text" {...register('lastName', { required: true } )} />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  function formSecondRow() {
-    return (
-      <div className="form-row">
-        <div className="form-column">
-          <div className="form-group">
-            <label>Correo:</label>
-            <input type="email" {...register('correo', { required: true })} />
-          </div>
-        </div>
-        <div className="form-column">
-          <div className="form-group">
-            <label>Móvil Personal:</label>
-            <input type="tel" {...register('phone', { required: true })} />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  function formThirdRow() {
-    return (
-      <div className="form-row">
-        <div className="form-column">
-          <div className="form-group">
-            <label >Móvil Laboral:</label>
-            <input type="tel" {...register('workPhone')} />
-          </div>
-        </div>
-        <div className="form-column">
-          <div className="form-group">
-            <label>Canales de comunicación:</label>
-            <div className="radio-group">
-              <input defaultChecked type="radio" value="email" {...register('commsChannel')} />
-              <label>Correo</label>
-
-              <input type="radio" value="sms" {...register('commsChannel')} />
-              <label>SMS</label>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    const postFormData = async () => {
+      setIsLoading(true);
+      setAlertData({ isOpen: false })
+      createBooksContactPerson({ recordId: zbooksRecordId, ...formData })
+        .then((data) => {
+          if (data?.code === 0) {
+            return setAlertData({
+              type: 'success',
+              description: data.message,
+              isOpen: true
+            });
+          }
+          throw new Error(data.message);
+        })
+        .catch((err) => setAlertData({ isOpen: true, description: err.message }))
+        .finally(() => setIsLoading(false))
+    }
+    if (formData && zbooksRecordId) {
+      postFormData();
+    }
+  }, [
+    zbooksRecordId,
+    formData,
+    createBooksContactPerson,
+    setIsLoading,
+    setAlertData
+  ])
 
   return (
-    <div className="container">
-      <div className="form-container">
-        <h2>Crear persona de contacto en Zoho Books</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {formFirstRow()}
-          {formSecondRow()}
-          {formThirdRow()}
-          <input type="submit" value="Enviar" />
-        </form>
-      </div>
-    </div>
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh'
+    }}>
+      {!false ?
+          <ZohoForm
+            setFormData={setFormData}
+            loading={isLoading}
+            disabled={false}
+            // disabled={!zbooksRecordId || isLoading}
+          /> 
+          : <ZohoSkeleton/>
+      }
+      <ZohoAlert
+        description={alertData?.description}
+        isOpen={alertData?.isOpen}
+        type={alertData?.type}
+        setAlertData={setAlertData}/>
+    </Box>
   )
 }
 

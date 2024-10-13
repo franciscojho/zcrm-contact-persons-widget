@@ -1,31 +1,54 @@
 import { ZOHO } from '../vendor/ZSDK'
 import { useEffect, useState } from "react";
-
-const buildRequestData = zcrmContactId => ({
-  arguments: JSON.stringify({
-    zcrm_contact_id : zcrmContactId
-  })
-});
+import { useZohoAdapter } from './useZohoAdapter';
 
 export default function useZohoWidget() {
-  const [recordId, setRecordId] = useState(null);
-  const [zbooksContact, setZbooksContact] = useState(null);
+  const [zcrmRecordId, setZcrmRecordId] = useState(null);
+  const [zbooksRecordId, setZBooksRecordId] = useState(null);
+  const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertData, setAlertData] = useState({
+    isOpen: false,
+    type: 'error',
+    description: '',
+  });
+  const { searchBooksContactById, createBooksContactPerson } = useZohoAdapter()
 
   useEffect(() => {
     init();
     function init() {
-      ZOHO.embeddedApp.on('PageLoad', (data) => setRecordId(data?.EntityId?.[0]));
+      ZOHO.embeddedApp.on('PageLoad', (data) => setZcrmRecordId(data?.EntityId?.[0]));
       return ZOHO.embeddedApp.init();
     }
   }, []);
 
   useEffect(() => {
-    if (recordId) getZbooksContact('searchzbookscontacts', recordId);
-    function getZbooksContact(funcName, zcrmContactId) {
-      ZOHO.CRM.FUNCTIONS.execute(funcName, buildRequestData(zcrmContactId))
-      .then(data => setZbooksContact(data))
-    }
-  }, [recordId]);
+    const getZbooksContact = (id) => 
+      searchBooksContactById(id)
+        .then(data => {
+          if (data?.contact_id) return setZBooksRecordId(data.contact_id)
+          throw new Error();
+        })
+        .catch(() => setAlertData({
+          isOpen: true,
+          description: 'No se ha encontrado el contacto en Zoho Books'
+        }))
+        .finally(() => setIsLoadingSkeleton(false))
 
-  return { recordId, zbooksContact };
+    if (zcrmRecordId) {
+      getZbooksContact(zcrmRecordId)
+    }
+
+  }, [zcrmRecordId, searchBooksContactById]);
+
+  return {
+    isLoadingSkeleton,
+    isLoading,
+    setIsLoading,
+    zcrmRecordId,
+    zbooksRecordId,
+    createBooksContactPerson,
+    alertData,
+    setAlertData
+  };
 }
