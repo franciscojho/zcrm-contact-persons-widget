@@ -33,6 +33,7 @@ function App() {
         .then((data) => {
           if (data?.code === 0) {
             return setAlertData({
+              title: 'Éxito',
               type: 'success',
               description: data.message,
               isOpen: true

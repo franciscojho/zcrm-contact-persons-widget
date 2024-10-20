@@ -1,8 +1,10 @@
 import SaveIcon from '@mui/icons-material/Save';
 import { LoadingButton } from "@mui/lab";
-import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Box} from "@mui/material";
+import { useForm } from "react-hook-form";
 import ZohoInputText from "./ZohoInputText";
+import ZohoInputSelect from './ZohoInputSelect';
+import ZohoInputRadio from './ZohoInputRadio';
 
 const containerStyles = {
   display: "flex",
@@ -18,6 +20,13 @@ const inputGroupStyles = {
   display: 'flex',
   mb: 2,
   gap: 2,
+}
+
+const radioGroupStyles = {
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  gap: 0,
 }
 
 const emailValidation = {
@@ -41,7 +50,9 @@ const defaultValues = {
     email: '',
     phone: '',
     workPhone: '',
-    commsChannel: '',
+    commsChannel: 'email',
+    designation: '',
+    department: '',
   },
 }
 
@@ -51,6 +62,7 @@ export default function ZohoForm({ setFormData, disabled, loading }) {
     console.log(data)
     setFormData(data)
   }
+
   return (
     <Box sx={{...containerStyles}}>
       <Box
@@ -74,7 +86,6 @@ export default function ZohoForm({ setFormData, disabled, loading }) {
         <Box sx={inputGroupStyles}>
           <ZohoInputText
             name='email'
-            type='correo'
             label='Correo'
             control={control}
             errorText={errors.email?.message}
@@ -90,12 +101,32 @@ export default function ZohoForm({ setFormData, disabled, loading }) {
         </Box>
         <Box sx={inputGroupStyles}>
           <ZohoInputText
+            name='designation'
+            label='Designación'
+            control={control}
+            errorText={errors.designation?.message}
+            disabled={disabled} />
+          <ZohoInputSelect
+            name='department'
+            label='Departamento'
+            control={control}
+            errorText={errors.department?.message}
+            disabled={disabled} />
+        </Box>
+        <Box sx={inputGroupStyles}>
+          <ZohoInputText
             name='workPhone'
             label='Móvil Laboral'
             control={control}
             errorText={errors.workPhone?.message}
             rules={phoneValidation}
             required={false}
+            disabled={disabled} />
+          <ZohoInputRadio
+            name='commsChannel'
+            label='Canales de comunicación'
+            control={control}
+            errorText={errors.commsChannel?.message}
             disabled={disabled} />
         </Box>
         <LoadingButton
