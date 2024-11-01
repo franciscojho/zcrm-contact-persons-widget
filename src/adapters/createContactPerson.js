@@ -5,6 +5,8 @@ export const createContactPerson = (payload) => ({
   email: payload.email,
   mobile: payload.phone,
   phone: payload.workPhone,
+  department: payload.department,
+  designation: payload.designation,
   salutation: payload.salutation,
   communication_preference: {
     is_email_enabled: payload.commsChannel === "email",

@@ -53,7 +53,6 @@ const defaultValues = {
 export default function ZohoForm({ setFormData, disabled, loading }) {
   const { control, handleSubmit, formState: { errors } } = useForm(defaultValues)
   const onSubmit = (data) => {
-    console.log(data)
     setFormData(data)
   }
 

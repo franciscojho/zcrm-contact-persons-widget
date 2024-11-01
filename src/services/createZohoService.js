@@ -6,16 +6,15 @@ const buildRequestData = params => ({
 });
 
 export const createZohoService = () => ({
-  searchBooksContactById: async (zcrmContactId) => {
+  searchBooksContactById: async ({ zcrmModule, zcrmId }) => {
     const { details = {} } =
       await ZOHO.CRM.FUNCTIONS.execute('searchzbookscontacts',
-        buildRequestData({ zcrmContactId })
+        buildRequestData({ zcrmModule, zcrmId })
       );
     const { output = {} } = details;
     return JSON.parse(output);
   },
   createBooksContactPerson: async (contactPersonData) => {
-    console.log('body', createContactPerson(contactPersonData));
     const { details = {} } =
       await ZOHO.CRM.FUNCTIONS.execute('createzbookscontactpersons',
         buildRequestData({ contactPersonData: createContactPerson(contactPersonData) })

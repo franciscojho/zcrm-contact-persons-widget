@@ -20,11 +20,6 @@ function App() {
     setFormData
   ] = useState(null);
 
-  // console.log({ zbooksRecordId })
-  // console.log({ isLoading })
-  // console.log({ zcrmRecordId })
-  // console.log({ formData })
-
   useEffect(() => {
     const postFormData = async () => {
       setIsLoading(true);
@@ -62,12 +57,11 @@ function App() {
       alignItems: 'center',
       height: '100vh'
     }}>
-      {!false ?
+      {!isLoadingSkeleton ?
           <ZohoForm
             setFormData={setFormData}
             loading={isLoading}
-            disabled={false}
-            // disabled={!zbooksRecordId || isLoading}
+            disabled={!zbooksRecordId || isLoading}
           /> 
           : <ZohoSkeleton/>
       }
@@ -75,6 +69,7 @@ function App() {
         description={alertData?.description}
         isOpen={alertData?.isOpen}
         type={alertData?.type}
+        title={alertData.title}
         setAlertData={setAlertData}/>
     </Box>
   )

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useZohoAdapter } from './useZohoAdapter';
 
 export default function useZohoWidget() {
-  const [zcrmRecordId, setZcrmRecordId] = useState(null);
+  const [zcrmRecordData, setZcrmRecordData] = useState(null);
   const [zbooksRecordId, setZBooksRecordId] = useState(null);
   const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,14 +17,19 @@ export default function useZohoWidget() {
   useEffect(() => {
     init();
     function init() {
-      ZOHO.embeddedApp.on('PageLoad', (data) => setZcrmRecordId(data?.EntityId?.[0]));
+      ZOHO.embeddedApp.on('PageLoad', (data) => {
+        setZcrmRecordData({
+          zcrmId: data?.EntityId?.[0],
+          zcrmModule: data?.Entity,
+        })
+      });
       return ZOHO.embeddedApp.init();
     }
   }, []);
 
   useEffect(() => {
-    const getZbooksContact = (id) => 
-      searchBooksContactById(id)
+    const getZbooksContact = (data) => 
+      searchBooksContactById(data)
         .then(data => {
           if (data?.contact_id) return setZBooksRecordId(data.contact_id)
           throw new Error();
@@ -35,17 +40,17 @@ export default function useZohoWidget() {
         }))
         .finally(() => setIsLoadingSkeleton(false))
 
-    if (zcrmRecordId) {
-      getZbooksContact(zcrmRecordId)
+    if (zcrmRecordData) {
+      getZbooksContact(zcrmRecordData)
     }
 
-  }, [zcrmRecordId, searchBooksContactById]);
+  }, [zcrmRecordData, searchBooksContactById]);
 
   return {
     isLoadingSkeleton,
     isLoading,
     setIsLoading,
-    zcrmRecordId,
+    zcrmRecordId: zcrmRecordData?.zcrmId,
     zbooksRecordId,
     createBooksContactPerson,
     alertData,
