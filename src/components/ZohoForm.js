@@ -1,6 +1,6 @@
 import SaveIcon from '@mui/icons-material/Save';
 import { LoadingButton } from "@mui/lab";
-import { Box} from "@mui/material";
+import { Box, MenuItem } from "@mui/material";
 import { useForm } from "react-hook-form";
 import ZohoInputText from "./ZohoInputText";
 import ZohoInputSelect from './ZohoInputSelect';
@@ -20,13 +20,6 @@ const inputGroupStyles = {
   display: 'flex',
   mb: 2,
   gap: 2,
-}
-
-const radioGroupStyles = {
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  gap: 0,
 }
 
 const emailValidation = {
@@ -53,6 +46,7 @@ const defaultValues = {
     commsChannel: 'email',
     designation: '',
     department: '',
+    salutation: 'Sr.',
   },
 }
 
@@ -70,6 +64,22 @@ export default function ZohoForm({ setFormData, disabled, loading }) {
         onSubmit={handleSubmit(onSubmit)}
       >
         <Box sx={inputGroupStyles}>
+        <ZohoInputSelect
+            sx={{
+              width: '30%'
+            }}
+            name='salutation'
+            label='Sldo.'
+            control={control}
+            errorText={errors.salutation?.message}
+            disabled={disabled}
+          >
+            <MenuItem value="Sr.">Sr.</MenuItem>
+            <MenuItem value=">Sra.">Sra.</MenuItem>
+            <MenuItem value="Dña.">Dña.</MenuItem>
+            <MenuItem value="Srta.">Srta.</MenuItem>
+            <MenuItem value="Dr.">Dr.</MenuItem>
+          </ZohoInputSelect>
           <ZohoInputText
             name='firstName'
             label='Nombres'
@@ -111,7 +121,14 @@ export default function ZohoForm({ setFormData, disabled, loading }) {
             label='Departamento'
             control={control}
             errorText={errors.department?.message}
-            disabled={disabled} />
+            disabled={disabled}
+          >
+            <MenuItem value="Logistica">Logistica</MenuItem>
+            <MenuItem value="Cobranzas">Cobranzas</MenuItem>
+            <MenuItem value="Facturación">Facturación</MenuItem>
+            <MenuItem value="Mantenimiento">Mantenimiento</MenuItem>
+            <MenuItem value="Operaciones">Operaciones</MenuItem>
+          </ZohoInputSelect>
         </Box>
         <Box sx={inputGroupStyles}>
           <ZohoInputText

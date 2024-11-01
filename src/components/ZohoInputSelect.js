@@ -14,7 +14,9 @@ export default function ZohoInputSelect({
   required = 'Este campo es requerido',
   errorText,
   rules = {},
-  disabled
+  disabled,
+  children,
+  sx,
 }) {
   return (
     <Controller
@@ -23,7 +25,7 @@ export default function ZohoInputSelect({
       control={control}
       disabled={disabled}
       render={({ field }) =>
-        <FormControl fullWidth>
+        <FormControl fullWidth sx={sx}>
           <InputLabel
             sx={{
               ...(errorText && { color: '#d32f2f' }) 
@@ -33,11 +35,7 @@ export default function ZohoInputSelect({
             label={label}
             error={!!errorText}
           >
-            <MenuItem value="Logistica">Logistica</MenuItem>
-            <MenuItem value="Cobranzas">Cobranzas</MenuItem>
-            <MenuItem value="Facturación">Facturación</MenuItem>
-            <MenuItem value="Mantenimiento">Mantenimiento</MenuItem>
-            <MenuItem value="Operaciones">Operaciones</MenuItem>
+            {children}
           </Select>
           {errorText && <FormHelperText sx={{ color: '#d32f2f' }}>{errorText}</FormHelperText>}
         </FormControl>
